@@ -63,8 +63,6 @@ const getParts = asyncHandler(async (req, res) => {
   res.json(parts);
 });
 
-
-
 // @desc    Get part by ID
 // @route   GET /api/parts/:id
 // @access  Private
@@ -86,7 +84,7 @@ const deletePart = asyncHandler(async (req, res) => {
   const part = await Part.findById(req.params.id);
 
   if (part) {
-    await part.remove();
+    await part.deleteOne();
     res.json({ message: "Part removed" });
   } else {
     res.status(404);

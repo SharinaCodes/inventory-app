@@ -5,7 +5,8 @@ const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
 const partRoutes = require('./routes/partRoutes');
 const productRoutes = require('./routes/productRoutes');
-const userRoutes = require('./routes/userRoutes'); // Ensure this is also included
+const userRoutes = require('./routes/userRoutes');
+const logRoutes = require('./routes/logRoutes'); 
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/api/parts', partRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/logs', logRoutes);
 
 app.use(errorHandler);
 

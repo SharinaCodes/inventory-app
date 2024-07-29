@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
-const asyncHandler = require('express-async-handler');
-const User = require('../models/userModel');
+const jwt = require("jsonwebtoken");
+const asyncHandler = require("express-async-handler");
+const User = require("../models/userModel");
 
 // Middleware to protect routes
 const protect = asyncHandler(async (req, res, next) => {
@@ -8,42 +8,42 @@ const protect = asyncHandler(async (req, res, next) => {
 
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
+    req.headers.authorization.startsWith("Bearer")
   ) {
     try {
       // Get token from header
-      token = req.headers.authorization.split(' ')[1];
+      token = req.headers.authorization.split(" ")[1];
 
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Get user from the token
-      req.user = await User.findById(decoded.id).select('-password');
+      req.user = await User.findById(decoded.id).select("-password");
 
       if (!req.user) {
         res.status(401);
-        throw new Error('Not authorized, user not found');
+        throw new Error("Not authorized, user not found");
       }
 
       next();
     } catch (error) {
       console.error(error);
-      if (error.name === 'TokenExpiredError') {
+      if (error.name === "TokenExpiredError") {
         res.status(401);
-        throw new Error('Not authorized, token expired');
-      } else if (error.name === 'JsonWebTokenError') {
+        throw new Error("Not authorized, token expired");
+      } else if (error.name === "JsonWebTokenError") {
         res.status(401);
-        throw new Error('Not authorized, invalid token');
+        throw new Error("Not authorized, invalid token");
       } else {
         res.status(401);
-        throw new Error('Not authorized, token failed');
+        throw new Error("Not authorized, token failed");
       }
     }
-  }
-
-  if (!token) {
-    res.status(401);
-    throw new Error('Not authorized, no token');
+  } else {
+    if (!token) {
+      res.status(401);
+      throw new Error("Not authorized, no token");
+    }
   }
 });
 
@@ -53,7 +53,7 @@ const admin = (req, res, next) => {
     next();
   } else {
     res.status(401);
-    throw new Error('Not authorized as an admin');
+    throw new Error("Not authorized as an admin");
   }
 };
 

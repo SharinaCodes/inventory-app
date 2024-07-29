@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 const {
   registerUser,
@@ -7,21 +7,22 @@ const {
   getUsers,
   deleteUser,
   updateUser,
-} = require("../controllers/userController");
-const { protect, admin } = require("../middleware/authMiddleware");
-const validate = require("../middleware/validateMiddleware");
+} = require('../controllers/userController');
+const { protect, admin } = require('../middleware/authMiddleware');
+const validate = require('../middleware/validateMiddleware');
 const {
   registerValidationRules,
   loginValidationRules,
-} = require("../middleware/validators/authValidators");
+} = require('../middleware/validators/authValidators');
+const { logAction } = require('../middleware/logMiddleware');
 
-router.post("/", registerValidationRules, validate, registerUser);
-router.post("/login", loginValidationRules, validate, loginUser);
-router.get("/me", protect, getMe);
-router.route("/").get(protect, admin, getUsers);
-router
-  .route("/:id")
-  .delete(protect, admin, deleteUser)
-  .put(protect, admin, updateUser);
+router.post('/', registerValidationRules, validate, protect, logAction('CREATE_USER'), registerUser);
+router.post('/login', loginValidationRules, validate, logAction('LOGIN_USER'), loginUser);
+router.get('/me', protect, getMe);
+router.route('/')
+  .get(protect, admin, logAction('GET_USERS'), getUsers);
+router.route('/:id')
+  .delete(protect, admin, logAction('DELETE_USER'), deleteUser)
+  .put(protect, admin, logAction('UPDATE_USER'), updateUser);
 
 module.exports = router;

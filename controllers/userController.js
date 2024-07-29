@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 
 // @desc    Register new user
 // @route   POST /api/users
-// @access  Public
+// @access  Public (Private for admin adding admin)
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, isAdmin = false } = req.body;
 
@@ -22,6 +22,14 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
 
+  // If isAdmin is true, verify the requester is an admin
+  // if (isAdmin) {
+  //   if (!req.user || !req.user.isAdmin) {
+  //     res.status(401);
+  //     throw new Error("Not authorized to add an admin");
+  //   }
+  // }
+
   // Hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
@@ -35,6 +43,11 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
+    req.logData = {
+      user: req.user ? req.user._id : user._id,
+      action: isAdmin ? 'CREATE_ADMIN' : 'REGISTER_USER',
+      details: `Created user with ID: ${user._id}`,
+    };
     res.status(201).json({
       _id: user.id,
       name: user.name,
@@ -99,6 +112,11 @@ const deleteUser = asyncHandler(async (req, res) => {
 
   if (user) {
     await user.deleteOne();
+    req.logData = {
+      user: req.user._id,
+      action: 'DELETE_USER',
+      details: `Deleted user with ID: ${user._id}`,
+    };
     res.json({ message: "User removed" });
   } else {
     res.status(404);
@@ -115,10 +133,14 @@ const updateUser = asyncHandler(async (req, res) => {
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
-    user.isAdmin =
-      req.body.isAdmin !== undefined ? req.body.isAdmin : user.isAdmin;
+    user.isAdmin = req.body.isAdmin !== undefined ? req.body.isAdmin : user.isAdmin;
 
     const updatedUser = await user.save();
+    req.logData = {
+      user: req.user._id,
+      action: 'UPDATE_USER',
+      details: `Updated user with ID: ${updatedUser._id}`,
+    };
     res.json({
       _id: updatedUser.id,
       name: updatedUser.name,
