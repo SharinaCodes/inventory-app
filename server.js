@@ -1,13 +1,22 @@
 const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
 const connectDB = require('./config/db');
+const { errorHandler } = require('./middleware/errorMiddleware');
 
-// Connect to the database
+dotenv.config();
+
 connectDB();
 
 const app = express();
 
-// Middleware to parse JSON
+app.use(cors());
 app.use(express.json());
 
+app.use('/api/users', require('./routes/userRoutes'));
+
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

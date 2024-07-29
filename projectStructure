@@ -1,0 +1,55 @@
+inventory-app/
+├── backend/
+│   ├── config/
+│   │   └── db.js
+│   ├── controllers/
+│   │   ├── partController.js
+│   │   ├── productController.js
+│   │   └── userController.js
+│   ├── middleware/
+│   │   └── authMiddleware.js
+│   ├── models/
+│   │   ├── partModel.js
+│   │   ├── productModel.js
+│   │   └── userModel.js
+│   ├── routes/
+│   │   ├── partRoutes.js
+│   │   ├── productRoutes.js
+│   │   └── userRoutes.js
+│   ├── utils/
+│   │   └── generateToken.js
+│   └── server.js
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Header.js
+│   │   │   ├── Spinner.js
+│   │   │   ├── PartForm.js
+│   │   │   └── ProductForm.js
+│   │   ├── features/
+│   │   │   ├── auth/
+│   │   │   │   ├── authSlice.js
+│   │   │   │   └── authService.js
+│   │   │   ├── parts/
+│   │   │   │   ├── partSlice.js
+│   │   │   │   └── partService.js
+│   │   │   ├── products/
+│   │   │   │   ├── productSlice.js
+│   │   │   │   └── productService.js
+│   │   ├── hooks/
+│   │   │   └── useAuthStatus.js
+│   │   ├── pages/
+│   │   │   ├── AddPart.js
+│   │   │   ├── AddProduct.js
+│   │   │   ├── Dashboard.js
+│   │   │   ├── Login.js
+│   │   │   ├── Register.js
+│   │   │   └── Reports.js
+│   │   ├── App.js
+│   │   ├── index.js
+│   │   └── store.js
+├── .env
+├── package.json
+└── README.md
