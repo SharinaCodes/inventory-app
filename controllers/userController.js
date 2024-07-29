@@ -3,6 +3,20 @@ const User = require("../models/userModel");
 const generateToken = require("../utils/generateToken");
 const bcrypt = require("bcryptjs");
 
+// Function to log actions
+const logAction = async (user, action, details) => {
+  try {
+    const log = new Log({
+      user,
+      action,
+      details,
+    });
+    await log.save();
+  } catch (error) {
+    console.error(`Logging error: ${error.message}`);
+  }
+};
+
 // @desc    Register new user
 // @route   POST /api/users
 // @access  Public (Private for admin adding admin)
@@ -23,12 +37,12 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // If isAdmin is true, verify the requester is an admin
-  // if (isAdmin) {
-  //   if (!req.user || !req.user.isAdmin) {
-  //     res.status(401);
-  //     throw new Error("Not authorized to add an admin");
-  //   }
-  // }
+  if (isAdmin) {
+    if (!req.user || !req.user.isAdmin) {
+      res.status(401);
+      throw new Error("Not authorized to add an admin");
+    }
+  }
 
   // Hash password
   const salt = await bcrypt.genSalt(10);
@@ -43,11 +57,12 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    req.logData = {
-      user: req.user ? req.user._id : user._id,
-      action: isAdmin ? 'CREATE_ADMIN' : 'REGISTER_USER',
-      details: `Created user with ID: ${user._id}`,
-    };
+    await logAction(
+      user._id,
+      isAdmin ? 'CREATE_ADMIN' : 'CREATE_USER',
+      `Created user with ID: ${user._id}`
+    );
+
     res.status(201).json({
       _id: user.id,
       name: user.name,
@@ -70,6 +85,12 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await bcrypt.compare(password, user.password))) {
+    await logAction(
+      user._id,
+      'LOGIN_USER',
+      `User logged in with ID: ${user._id}`
+    );
+    
     res.json({
       _id: user.id,
       name: user.name,
