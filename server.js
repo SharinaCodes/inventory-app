@@ -3,6 +3,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
+const partRoutes = require('./routes/partRoutes');
+const productRoutes = require('./routes/productRoutes');
+const userRoutes = require('./routes/userRoutes'); // Ensure this is also included
 
 dotenv.config();
 
@@ -13,7 +16,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/parts', partRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
 
 app.use(errorHandler);
 
